@@ -9,7 +9,7 @@ import { formatINR } from "@/utils/format";
 import { formatDisplayDate } from "@/utils/dates";
 import { Invoice, Payment, Deal, Task, Project } from "@/domain/types/entities";
 import { AlertTriangle, Clock4, ArrowUpRight, FileWarning, HandCoins } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, TooltipProps } from "recharts";
 
 export default function DashboardPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -48,6 +48,9 @@ export default function DashboardPage() {
     });
   }, [invoices, payments]);
 
+  const tooltipFormatter: TooltipProps<number, string>["formatter"] = (value) =>
+    formatINR(typeof value === "number" ? value : Number(value ?? 0));
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
@@ -70,7 +73,7 @@ export default function DashboardPage() {
                 <BarChart data={chartData}>
                   <XAxis dataKey="month" stroke="#94a3b8" />
                   <YAxis stroke="#94a3b8" tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
-                  <Tooltip formatter={(val: number) => formatINR(val)} />
+                  <Tooltip formatter={tooltipFormatter} />
                   <Legend />
                   <Bar dataKey="billed" fill="#6366f1" radius={[4, 4, 0, 0]} />
                   <Bar dataKey="collected" fill="#22c55e" radius={[4, 4, 0, 0]} />
